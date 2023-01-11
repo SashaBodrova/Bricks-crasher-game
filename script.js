@@ -24,6 +24,31 @@ let dy = -2
 
 const ballRadius = 10
 
+let bricks = []
+for(let column = 0; column < brickColumnCount; column++) {
+  bricks[column] = []
+  for(let row = 0; row < brickRowCount; row++) {
+    bricks[column][row] = { x: 0, y: 0 }
+  }
+}
+
+function drawBricks() {
+  for(let column = 0; column < brickColumnCount; column++) {
+    for(let row = 0; row < brickRowCount; row++) {
+      let brickX = (column*(brickWidth+brickPadding))+brickOffsetLeft;
+      let brickY = (row*(brickHeight+brickPadding))+brickOffsetTop;
+
+      bricks[column][row].x = brickX
+      bricks[column][row].y = brickY
+      ctx.beginPath()
+      ctx.rect(brickX, brickY, brickWidth, brickHeight)
+      ctx.fillStyle = '#0095DD'
+      ctx.fill()
+      ctx.closePath()
+    }
+  }
+}
+
 function drawBall() {
   ctx.beginPath()
   // (положение по оси х, положение по оси у, радиус)
@@ -50,6 +75,7 @@ function draw() {
   // рисуй мяч заново
   drawBall()
   drawPaddle()
+  drawBricks()
 
   // меняй положение мяча
   x += dx
@@ -63,6 +89,7 @@ function draw() {
     if(x > paddleX && x < paddleX + paddleWidth) {
       dy = -dy
     } else {
+      console.log(bricks)
       console.log(x, paddleX)
       alert('GAME OVER')
       document.location.reload()
