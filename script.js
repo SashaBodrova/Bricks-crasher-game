@@ -28,23 +28,28 @@ let bricks = []
 for(let column = 0; column < brickColumnCount; column++) {
   bricks[column] = []
   for(let row = 0; row < brickRowCount; row++) {
-    bricks[column][row] = { x: 0, y: 0 }
+    bricks[column][row] = { x: 0, y: 0, status: 1 }
   }
 }
 
 function drawBricks() {
   for(let column = 0; column < brickColumnCount; column++) {
     for(let row = 0; row < brickRowCount; row++) {
-      let brickX = (column*(brickWidth+brickPadding))+brickOffsetLeft;
-      let brickY = (row*(brickHeight+brickPadding))+brickOffsetTop;
+      if(bricks[column][row].status === 1) {
+        let brickX = (column*(brickWidth+brickPadding))+brickOffsetLeft;
+        let brickY = (row*(brickHeight+brickPadding))+brickOffsetTop;
 
-      bricks[column][row].x = brickX
-      bricks[column][row].y = brickY
-      ctx.beginPath()
-      ctx.rect(brickX, brickY, brickWidth, brickHeight)
-      ctx.fillStyle = '#0095DD'
-      ctx.fill()
-      ctx.closePath()
+        bricks[column][row].x = brickX
+        bricks[column][row].y = brickY
+        ctx.beginPath()
+        ctx.rect(brickX, brickY, brickWidth, brickHeight)
+        ctx.fillStyle = '#0095DD'
+        ctx.fill()
+        ctx.closePath()
+      } else if(bricks[column][row].status === 0) {
+        console.log(bricks[column][row])
+        bricks.filter(() => bricks[column][row].status === 1)
+      }
     }
   }
 }
@@ -68,14 +73,34 @@ function drawPaddle() {
   ctx.closePath()
 }
 
+function collisionDetection() {
+  for(let col = 0; col < brickColumnCount; col++) {
+    for(let row = 0; row < brickRowCount; row++) {
+      let brick = bricks[col][row]
+
+      if(x > brick.x && x < brick.x + brickWidth && y - ballRadius > brick.y && y - ballRadius < brick.y + brickHeight) {
+        dy = -dy
+        brick.status = 0
+        // bricks.filter(() => bricks[col][row].status === 1)
+        // if(bricks[col][row].status === 0) {
+        //   ctx.clearRect(bricks[col][row].x, bricks[col][row].y, bricks[col][row].x + brickWidth, bricks[col][row].y + brickHeight)
+        // }
+      }
+    }
+  }
+}
+
 function draw() {
   // сначала очищай предыдущий нарисоанный мяч
   ctx.clearRect(0, 0, canvas.width, canvas.height)
+
 
   // рисуй мяч заново
   drawBall()
   drawPaddle()
   drawBricks()
+
+  collisionDetection()
 
   // меняй положение мяча
   x += dx
@@ -90,7 +115,6 @@ function draw() {
       dy = -dy
     } else {
       console.log(bricks)
-      console.log(x, paddleX)
       alert('GAME OVER')
       document.location.reload()
 
